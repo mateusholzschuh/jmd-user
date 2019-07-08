@@ -1,5 +1,8 @@
 package com.jmd.user;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ import com.jmd.user.modelo.Mercado;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -59,13 +63,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mercadoList.add(m);
 
                     LatLng p1 = new LatLng(  m.getLocal().getLatitude(), m.getLocal().getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(p1).title(m.getNome()));
+                    MarkerOptions ponto = new MarkerOptions().position(p1).title(m.getUuid());
+
+
+                    mMap.addMarker(ponto);
                 }
+
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(final Marker marker) {
+//                marker.getPosition()
+                Mercado merc = null;
+
+                for (Mercado m : mercadoList) {
+                    if(m.getUuid().equals(marker.getTitle())) {
+                        merc = m;
+                    }
+                }
+
+
+                builder.setTitle(merc.getNome());
+                builder.setMessage(merc.toString());
+                builder.setPositiveButton("VER PROMOÇÕES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(getBaseContext(), ListPromo.class);
+                        i.putExtra("mercado", marker.getTitle());
+                        startActivity(i);
+                    }
+                });
+                builder.show();
+return true;
             }
         });
 

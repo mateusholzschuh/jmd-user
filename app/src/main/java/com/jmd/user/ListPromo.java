@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jmd.user.adaptadores.PromocaoAdapter;
 import com.jmd.user.modelo.Mercado;
@@ -37,11 +39,17 @@ public class ListPromo extends AppCompatActivity {
         aliaslista = findViewById(R.id.ListID);
         promocao = new Promocao();
 
-        Intent i = getIntent();
-        mercado = (Mercado) i.getSerializableExtra("mercado");
-        if (i!=null && mercado!=null)
-        {
+        listPromocoes = new ArrayList<>();
 
+        Intent i = getIntent();
+        String muuid = i.getStringExtra("mercado");
+        if (i!=null && muuid!=null)
+        {
+            mercado = new Mercado();
+            mercado.setUuid(muuid);
+        }
+        else {
+            finish();
         }
 
 
@@ -49,7 +57,7 @@ public class ListPromo extends AppCompatActivity {
         aliaslista.setItemAnimator(new DefaultItemAnimator());
 
         // TODO: FETCH ALL RECORDS FROM FIREBASE HERE
-        listPromocoes = new ArrayList<>();
+        //listPromocoes = new ArrayList<>();
         PromocaoDAO.getInstance().buscarTodas(mercado.getUuid(), recuperaDados());
         aliaslista.setAdapter(adapter = new PromocaoAdapter(this, listPromocoes, onClickPromocao()));
     }
@@ -63,7 +71,7 @@ public class ListPromo extends AppCompatActivity {
 
                 // envia objeto clicado para o manter...
                 Intent intent = new Intent(getBaseContext(), VisualizarItem.class);
-                intent.putExtra("Promocao", promocao);
+                intent.putExtra("promocao", promocao);
                 startActivity(intent);
             }
         };
