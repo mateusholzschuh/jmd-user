@@ -1,5 +1,6 @@
 package com.jmd.user;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -12,10 +13,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.jmd.user.modelo.Mercado;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
+    List<Mercado> mercadoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mercadoList = new ArrayList<>();
     }
 
 
@@ -35,28 +47,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int zoom=13;
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("mercados");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    Mercado m = d.getValue(Mercado.class);
+                    m.setUuid(d.getKey());
+
+                    mercadoList.add(m);
+
+                    LatLng p1 = new LatLng(  m.getLocal().getLatitude(), m.getLocal().getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(p1).title(m.getNome()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         // Add a marker in Sydney and move the camera
-        LatLng p1 = new LatLng(  -31.32399481,  -54.12874043);
-        mMap.addMarker(new MarkerOptions().position(p1).title("Chácara da Cristina"));
-
-        LatLng p2 = new LatLng(-31.30328737, -54.12083423);
-        mMap.addMarker(new MarkerOptions().position(p2).title("Leandro Beer"));
-
-        LatLng p3 = new LatLng(-31.35283609, -54.10931887);
-        mMap.addMarker(new MarkerOptions().position(p3).title("Whiskeria do Arco"));
-
-        LatLng p4 = new LatLng(-31.33141349, -54.10291810);
-        mMap.addMarker(new MarkerOptions().position(p4).title("Bar do Amassado!"));
-
-        LatLng p5 = new LatLng(-31.30139809, -54.08052782);
-        mMap.addMarker(new MarkerOptions().position(p5).title("Sta. Tecla Rosa"));
-
-        LatLng p6 = new LatLng(-31.344785, -54.0980067);
-        mMap.addMarker(new MarkerOptions().position(p6).title("The Flowers"));
+//        LatLng p1 = new LatLng(  -31.32399481,  -54.12874043);
+//        mMap.addMarker(new MarkerOptions().position(p1).title("Chácara da Cristina"));
+//
+//        LatLng p2 = new LatLng(-31.30328737, -54.12083423);
+//        mMap.addMarker(new MarkerOptions().position(p2).title("Leandro Beer"));
+//
+//        LatLng p3 = new LatLng(-31.35283609, -54.10931887);
+//        mMap.addMarker(new MarkerOptions().position(p3).title("Whiskeria do Arco"));
+//
+//        LatLng p4 = new LatLng(-31.33141349, -54.10291810);
+//        mMap.addMarker(new MarkerOptions().position(p4).title("Bar do Amassado!"));
+//
+//        LatLng p5 = new LatLng(-31.30139809, -54.08052782);
+//        mMap.addMarker(new MarkerOptions().position(p5).title("Sta. Tecla Rosa"));
+//
+//        LatLng p6 = new LatLng(-31.344785, -54.0980067);
+//        mMap.addMarker(new MarkerOptions().position(p6).title("The Flowers"));
 
         // mMap.moveCamera(CameraUpdateFactory.newLatLng(p4));
 
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(p4, zoom);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(-31.33141349, -54.10291810), zoom);
         mMap.moveCamera(update);
 
 //        CameraPosition cameraPosition = new CameraPosition.Builder()
