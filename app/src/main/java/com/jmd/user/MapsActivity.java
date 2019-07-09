@@ -91,14 +91,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
 
+                final String nome = merc.getNome();
+
+                String descricao = "Endereço: " + merc.getEndereco() + "\n\n" +
+                                   "Telefone: " + merc.getTelefone();
 
                 builder.setTitle(merc.getNome());
-                builder.setMessage(merc.toString());
+                builder.setMessage(descricao);
                 builder.setPositiveButton("VER PROMOÇÕES", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = new Intent(getBaseContext(), ListPromo.class);
                         i.putExtra("mercado", marker.getTitle());
+                        i.putExtra("nome", nome);
                         startActivity(i);
                     }
                 });

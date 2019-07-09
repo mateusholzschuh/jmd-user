@@ -16,8 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ListPromo"
-            android:theme="@style/Theme.AppCompat.DayNight"></activity>
-        <activity android:name=".VisualizarItem" />
+            android:theme="@style/Theme.AppCompat.Light"></activity>
+
+        <activity android:name=".VisualizarItem"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

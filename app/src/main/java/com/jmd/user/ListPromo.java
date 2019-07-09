@@ -2,6 +2,7 @@ package com.jmd.user;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -43,13 +44,18 @@ public class ListPromo extends AppCompatActivity {
 
         Intent i = getIntent();
         String muuid = i.getStringExtra("mercado");
-        if (i!=null && muuid!=null)
-        {
+        String nomeMerc = i.getStringExtra("nome");
+
+        if (i!=null && muuid!=null) {
             mercado = new Mercado();
             mercado.setUuid(muuid);
         }
         else {
             finish();
+        }
+
+        if (nomeMerc!=null) {
+            setTitle(nomeMerc);
         }
 
 
@@ -58,7 +64,7 @@ public class ListPromo extends AppCompatActivity {
 
         // TODO: FETCH ALL RECORDS FROM FIREBASE HERE
         //listPromocoes = new ArrayList<>();
-        PromocaoDAO.getInstance().buscarTodas(mercado.getUuid(), recuperaDados());
+        PromocaoDAO.getInstance().buscarTodasSincronizado(mercado.getUuid(), recuperaDados());
         aliaslista.setAdapter(adapter = new PromocaoAdapter(this, listPromocoes, onClickPromocao()));
     }
 
